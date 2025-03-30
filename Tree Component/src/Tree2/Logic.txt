@@ -1,0 +1,168 @@
+These are import statements to bring in necessary classes from Java libraries:
+
+javax.swing.*: Provides GUI components like JFrame, JTree, JLabel, etc.
+javax.swing.event.*: Includes event-handling classes, such as TreeSelectionListener.
+javax.swing.tree.*: Provides tree-specific classes like DefaultMutableTreeNode.
+java.awt.*: Includes layout managers like BorderLayout.
+java.io.*: Provides file handling classes like File.
+java.util.StringTokenizer: A utility class to split strings into tokens.
+
+
+Implements TreeSelectionListener to handle events when a tree node is selected.
+
+
+    JTree tree;
+    JLabel label;
+Declares two instance variables:
+tree: A JTree object to display the file system hierarchy.
+label: A JLabel to show details of the selected file or directory.
+
+Constructor
+    MyFrame() {
+        super("File Tree Demo");
+
+Constructor for MyFrame.
+Calls the superclass (JFrame) constructor with the title "File Tree Demo" for the window.
+        String rootPath = "C://Users//somes//Downloads//Java-Swing";
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootPath);
+        File rootFile = new File(rootPath);
+
+rootPath: Specifies the root directory to explore (e.g., "C://Users//somes//Downloads//Java-Swing").
+root: Creates a DefaultMutableTreeNode (a node in the tree) with the root path as its data.
+rootFile: Creates a File object representing the root directory.
+
+        if (rootFile.exists() && rootFile.isDirectory()) {
+            for (File file : rootFile.listFiles()) {
+
+Checks if rootFile exists and is a directory.
+Loops through all files and subdirectories in rootFile using listFiles() (returns an array of File objects).
+                if (file.isDirectory()) {
+                    DefaultMutableTreeNode dirNode = new DefaultMutableTreeNode(file.getName());
+
+If the current file is a directory:
+Creates a new DefaultMutableTreeNode called dirNode with the directory's name (e.g., "folder1").
+                    for (File subfile : file.listFiles()) {
+                        dirNode.add(new DefaultMutableTreeNode(subfile.getName()));
+                    }
+                    root.add(dirNode);
+
+Loops through all files/subdirectories in the current directory.
+Adds each file/subdirectory as a child node to dirNode using its name.
+Adds dirNode (the directory node) as a child of the root node.
+
+                } else {
+                    root.add(new DefaultMutableTreeNode(file.getName()));
+                }
+
+If the current file is not a directory (i.e., it’s a file):
+Adds it directly as a child node to root with its name (e.g., "file.txt").
+        }
+
+Closes the if block that checks if the root directory exists.
+        tree = new JTree(root);
+        tree.addTreeSelectionListener(this);
+        JScrollPane sp = new JScrollPane(tree);
+
+Creates a JTree object with root as the top node, representing the file hierarchy.
+Adds this (the MyFrame instance) as a TreeSelectionListener to handle node selection events.
+Wraps the tree in a JScrollPane for scrollability if the tree is too large.
+
+        label = new JLabel("No file selected");
+
+Initializes the label with default text "No file selected".
+        setLayout(new BorderLayout());
+        add(sp, BorderLayout.CENTER);
+        add(label, BorderLayout.SOUTH);
+
+Sets the layout of the JFrame to BorderLayout.
+Adds the JScrollPane (containing the tree) to the center of the frame.
+Adds the label to the bottom (south) of the frame.
+
+TreeSelectionListener Implementation:
+    @Override
+    public void valueChanged(TreeSelectionEvent e) {
+Implements the valueChanged method from TreeSelectionListener.
+
+This method is triggered whenever a user selects a node in the tree.
+        TreePath tp = e.getPath();
+
+Gets the TreePath of the selected node (a path from the root to the selected node).
+
+        StringTokenizer tokenizer = new StringTokenizer(tp.toString(), "[,]");
+        StringBuilder fullPath = new StringBuilder();
+
+tp.toString() returns the path as a string like "[C://Users//somes//Downloads//Java-Swing, folder1, file.txt]".
+StringTokenizer splits this string into tokens using "[" and "," as delimiters.
+fullPath: A StringBuilder to reconstruct the full file path.
+
+        while (tokenizer.hasMoreTokens()) {
+            String token = tokenizer.nextToken().trim();
+            if (!token.isEmpty()) {
+
+Loops through each token (e.g., "C://Users//somes//Downloads//Java-Swing", "folder1", "file.txt").
+Trims whitespace from each token and checks if it’s not empty.
+
+                if (fullPath.length() == 0) {
+                    fullPath.append(token);
+                } else {
+                    fullPath.append(File.separator).append(token);
+                }
+
+If fullPath is empty (first token):
+Appends the token directly (e.g., "C://Users//somes//Downloads//Java-Swing").
+
+Otherwise:
+Appends the platform-specific file separator (e.g., "" on Windows) followed by the token.
+            }
+        }
+
+Closes the token-processing loop. At this point, fullPath contains the complete path
+(e.g., "C:\Users\somes\Downloads\Java-Swing\folder1\file.txt").
+        File selectedFile = new File(fullPath.toString());
+        String details;
+
+Creates a File object from the reconstructed path.
+Declares a details string to store information about the selected file.
+        if (selectedFile.exists()) {
+            if (selectedFile.isDirectory()) {
+                details = "Directory: " + selectedFile.getAbsolutePath();
+            } else {
+                details = "File: " + selectedFile.getAbsolutePath() +
+                        " | Size: " + selectedFile.length() + " bytes";
+            }
+        } else {
+            details = "Path does not exist: " + fullPath.toString();
+        }
+
+If the file/directory exists:
+If it’s a directory: Sets details to show it’s a directory with its absolute path.
+If it’s a file: Sets details to show it’s a file, its absolute path, and size in bytes.
+If it doesn’t exist:
+Sets details to indicate the path is invalid.
+
+        label.setText(details);
+
+Updates the label text with the details string.
+Main Method
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+The main method is the entry point of the program.
+
+SwingUtilities.invokeLater ensures the GUI is created on the Event Dispatch Thread (EDT), which is a Swing best practice.
+            MyFrame f = new MyFrame();
+            f.setSize(500, 500);
+            f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            f.setVisible(true);
+        });
+    }
+
+Creates a MyFrame instance.
+Sets the window size to 500x500 pixels.
+Configures the frame to exit the application when closed.
+Makes the frame visible.
+
+What Does This Code Do?
+This program creates a Swing-based GUI application that:
+Displays a tree structure of files and directories starting from a specified root path ("C://Users//somes//Downloads//Java-Swing").
+Shows directories as expandable nodes with their contents as children.
+Displays files as leaf nodes.

@@ -1,0 +1,60 @@
+Explanation of Changes
+
+1. Making It Dynamic
+User-Selected Root Directory:
+Added a JMenuBar with a "File" menu containing an "Open" option.
+When "Open" is clicked, a JFileChooser (set to DIRECTORIES_ONLY) allows the user to pick a root directory.
+
+The setNewRoot method updates the tree with this new root.
+
+The initial root defaults to the user’s home directory (System.getProperty("user.home")), making it more portable than
+a hardcoded path.
+
+Dynamic Tree Updates:
+The setNewRoot method creates a new DefaultMutableTreeNode for the selected directory, populates its immediate children,
+and updates the JTree’s model. This ensures the tree reflects the user’s choice dynamically.
+
+2. Optimization
+
+Lazy Loading:
+Implemented lazy loading using a TreeWillExpandListener. Directory nodes initially have a dummy child ("Loading...").
+
+When expanded, the dummy child is removed, and the actual contents are loaded using populateChildren.
+This reduces initial load time and memory usage, especially for large directories.
+
+After updating a node’s children, reload(node) refreshes the tree display efficiently.
+
+Efficient Data Handling:
+Introduced a FileWrapper class that holds a File object but displays only the file name in the tree (via toString).
+
+This preserves access to the full File object for operations like getting the absolute path or file size, avoiding
+redundant path reconstruction.
+
+Simplified Selection Logic:
+The valueChanged method now directly retrieves the selected node’s FileWrapper, accessing the File object to display
+detailed information (e.g., full path, size).
+
+This eliminates the original code’s reliance on StringTokenizer and path string parsing, making it cleaner and more
+reliable.
+
+Error Handling:
+Added basic checks in setNewRoot to ensure the selected root is a valid directory, showing an error dialog if not.
+
+In populateChildren, listFiles() is checked for null to avoid exceptions on inaccessible directories.
+
+3. Code Cleanliness
+Modular Methods:
+Extracted node creation (createNode) and child population (populateChildren) into separate methods for reusability and
+readability.
+
+Consistent Naming:
+Used meaningful variable names (e.g., scrollPane instead of sp, label instead of l) to enhance maintainability.
+
+Lambda Usage:
+Employed a lambda expression for the ActionListener to keep the code concise.
+
+Benefits
+Dynamic: Users can now explore any directory on their system, not just a hardcoded path.
+Optimized: Lazy loading ensures the application remains responsive with large file structures, and direct File object
+access improves efficiency.
+User-Friendly: Displays file names in the tree while providing detailed info (path, size) in the label.

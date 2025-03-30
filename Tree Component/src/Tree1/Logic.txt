@@ -1,0 +1,167 @@
+This code creates a GUI application that displays a file system hierarchy in a tree structure and updates a
+label based on user selection.
+
+javax.swing.*: Imports Swing GUI components (e.g., JFrame, JTree, JLabel).
+javax.swing.event.*: Imports event-handling classes (e.g., TreeSelectionListener for tree selection events).
+java.awt.*: Imports AWT classes (e.g., BorderLayout for layout management).
+javax.swing.tree.*: Imports tree-specific classes (e.g., DefaultMutableTreeNode for tree nodes).
+java.io.*: Imports file-handling classes (e.g., File for file system operations).
+java.util.StringTokenizer: Imports a utility class to split strings into tokens based on delimiters.
+
+
+Implements TreeSelectionListener, meaning this class will handle events triggered when a user selects a node in the tree.
+
+    JTree t;
+    JLabel l;
+
+Logic and Purpose: Declares two instance variables:
+
+t: A JTree object that will display the file system hierarchy as a tree structure.
+l: A JLabel object that will display the name of the selected file or directory (or a default message).
+
+Constructor:
+
+    MyFrame() {
+Logic and Purpose: This is the constructor for the MyFrame class, responsible for setting up the GUI components and logic
+
+DefaultMutableTreeNode drive = new DefaultMutableTreeNode("C://Users//somes//Downloads//Java-Swing");
+Logic and Purpose:
+Creates a DefaultMutableTreeNode object named drive, which serves as the root node of the tree.
+
+The string "C://Users//somes//Downloads//Java-Swing" is the label for this node, representing the starting directory path.
+
+File f1 = new File("C://Users//somes//Downloads//Java-Swing");
+Logic and Purpose:
+Creates a File object f1 that points to the directory "C://Users//somes//Downloads//Java-Swing".
+
+This object will be used to access the actual files and subdirectories in the file system.
+
+for (File x : f1.listFiles()) {
+
+Logic and Purpose:
+f1.listFiles() returns an array of File objects representing all files and subdirectories in the specified directory.
+
+This for loop iterates over each File object (x) in that array.
+            if (x.isDirectory()) {
+                DefaultMutableTreeNode temp = new DefaultMutableTreeNode(x.getName());
+
+Logic and Purpose:
+x.isDirectory() checks if x is a directory.
+
+If true, creates a new DefaultMutableTreeNode called temp with the directory’s name (e.g., "folder1"),
+retrieved using x.getName().
+
+                for (File y : x.listFiles())
+                    temp.add(new DefaultMutableTreeNode(y.getName()));
+                drive.add(temp);
+
+Logic and Purpose:
+x.listFiles() gets all files and subdirectories within the directory x.
+The inner for loop iterates over each File object (y) in x.
+For each y, a new DefaultMutableTreeNode is created with y.getName() (e.g., "file.txt") and
+added as a child to temp using temp.add().
+After populating temp with its children, temp (the directory node) is added as a child to the drive node using drive.add().
+
+            } else
+                drive.add(new DefaultMutableTreeNode(x.getName()));
+
+Logic and Purpose:
+If x.isDirectory() is false (i.e., x is a file), a new DefaultMutableTreeNode is created with the file’s name
+(e.g., "file.txt").
+This node is added directly to the drive node as a child, since files don’t have sub-nodes.
+        }
+
+Logic and Purpose: Closes the outer for loop that processes all files and directories in f1.
+        t = new JTree(drive);
+        JScrollPane jp = new JScrollPane(t);
+
+Logic and Purpose:
+t = new JTree(drive) creates a JTree object with drive as its root node, building the visual tree structure.
+JScrollPane jp = new JScrollPane(t) wraps the JTree in a scroll pane, allowing scrolling if the tree exceeds
+the visible area.
+        l = new JLabel("No Files Selected");
+
+Logic and Purpose:
+Initializes the JLabel object l with the default text "No Files Selected", shown before any node is selected.
+        t.addTreeSelectionListener(this);
+
+Logic and Purpose:
+Registers this (the MyFrame instance) as a TreeSelectionListener for the JTree object t.
+
+This means the valueChanged method (defined later) will be called when a tree node is selected.
+        add(jp, BorderLayout.NORTH);
+        add(l, BorderLayout.SOUTH);
+
+Logic and Purpose:
+add(jp, BorderLayout.NORTH) adds the JScrollPane (containing the tree) to the northern (top) region of the
+JFrame using BorderLayout.
+
+add(l, BorderLayout.SOUTH) adds the JLabel to the southern (bottom) region of the JFrame.
+TreeSelectionListener Implementation
+    @Override
+    public void valueChanged(TreeSelectionEvent e) {
+
+Logic and Purpose:
+This method is required by the TreeSelectionListener interface.
+
+It’s triggered whenever a user selects a node in the JTree, passing a TreeSelectionEvent object (e) with
+selection details.
+        TreePath tp = e.getPath();
+
+Logic and Purpose:
+e.getPath() retrieves the TreePath of the selected node, which represents the full path from the
+root to the selected node (e.g., [C://Users//somes//Downloads//Java-Swing, folder1, file.txt]).
+
+        StringTokenizer sz = new StringTokenizer(tp.toString(), ",]");
+
+Logic and Purpose:
+tp.toString() converts the TreePath to a string, like "[C://Users//somes//Downloads//Java-Swing, folder1, file.txt]".
+
+StringTokenizer splits this string into tokens using , and ] as delimiters
+(e.g., tokens: "[C://Users//somes//Downloads//Java-Swing", " folder1", " file.txt").
+
+        String str = "";
+        while (sz.hasMoreTokens())
+            str = sz.nextToken();
+
+Logic and Purpose:
+Initializes an empty string str.
+Loops through all tokens from StringTokenizer.
+Each iteration overwrites str with the next token, so str ends up with the last token (e.g., " file.txt"),
+which is the selected node’s name.
+        l.setText(str);
+
+Logic and Purpose:
+Updates the JLabel text to display str (e.g., " file.txt"), showing the name of the selected file or directory.
+
+Main Class and Method
+java
+public class SwingTree {
+    public static void main(String[] args) {
+
+Logic and Purpose:
+Defines the main class SwingTree, which contains the program’s entry point.
+main is the starting method executed when the program runs.
+
+        MyFrame f = new MyFrame();
+        f.setSize(400, 400);
+        f.setVisible(true);
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+}
+
+Logic and Purpose:
+MyFrame f = new MyFrame() creates an instance of MyFrame, triggering its constructor to set up the GUI.
+f.setSize(400, 400) sets the window size to 400x400 pixels.
+f.setVisible(true) makes the window visible on the screen.
+f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE) ensures the application exits when the window is closed.
+
+Overall Functionality:
+
+This code creates a Swing-based GUI application that:
+Displays a tree structure of files and directories starting from "C://Users//somes//Downloads//Java-Swing".
+Represents directories as expandable nodes with their contents (files and subdirectories) as children.
+Represents files as leaf nodes (non-expandable).
+Updates a label at the bottom with the name of the selected file or directory when a user clicks a node in the tree.
+Each line contributes to building this file explorer-like interface, leveraging Swing components, file system operations,
+and event handling to provide an interactive experience.
