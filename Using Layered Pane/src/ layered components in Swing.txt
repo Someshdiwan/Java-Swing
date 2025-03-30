@@ -1,0 +1,73 @@
+1. JLayeredPane
+
+Definition:
+A container that allows components to overlap each other.
+Each component in a JLayeredPane is given an integer “layer” value which determines its z-order
+(i.e., which component appears on top of which).
+
+Use Cases:
+
+Managing overlapping components.
+Creating dynamic visual effects (such as drag-and-drop overlays or temporary notifications).
+Building custom UI elements that need to appear above or below other elements.
+
+Key Concept – Z-Order:
+The z-order is the stacking order of components. A higher layer value means the component will be painted over
+those with lower values.
+
+2. JDesktopPane
+
+Definition:
+A specialized subclass of JLayeredPane designed to hold multiple internal frames (usually instances of JInternalFrame).
+It simulates a desktop environment inside a Swing application.
+
+Use Cases:
+Multi-document interfaces (MDI) where each document is contained within its own internal window.
+Applications like IDEs (Integrated Development Environments) that require multiple internal frames.
+
+Relationship:
+Since JDesktopPane extends JLayeredPane, it inherits the ability to manage overlapping components but is optimized for
+internal window management.
+
+3. JInternalFrame
+
+Definition:
+A lightweight component that provides window-like features (minimization, maximization, closing, etc.)
+within a container like JDesktopPane.
+
+Use Cases:
+Creating movable, resizable, and closable “windows” within an application.
+Organizing multiple document interfaces where each document can have its own windowed area.
+
+Features:
+Can have its own menu bar.
+Behaves like a sub-window inside a larger application window.
+Supports internal decorations such as title bars and borders.
+
+4. Layering Concepts in Swing
+
+Layers:
+When adding components to a JLayeredPane, you assign them a layer (e.g., Integer.valueOf(0),
+Integer.valueOf(1), etc.).
+Components in higher layers will appear above components in lower layers.
+
+Z-Order Management:
+The stacking order (z-order) is crucial when you have interactive elements that might overlap.
+It helps determine which component the user sees or interacts with first.
+
+Absolute Positioning:
+Often, when working with JLayeredPane, a null layout is used to enable absolute positioning.
+This gives you full control over the location and size of each component.
+
+Summary:
+JLayeredPane is the general-purpose container for overlapping components.
+
+JDesktopPane is a specialized form of JLayeredPane meant for internal frames.
+
+JInternalFrame provides the functionality of individual, movable sub-windows within a desktop pane.
+
+These components and concepts help developers create rich, dynamic, and interactive user interfaces by giving
+precise control over which component appears in front of or behind another.
+
+These layered components are especially useful in applications requiring complex, overlapping visual arrangements,
+such as IDEs, graphic editors, or custom desktop-like environments.

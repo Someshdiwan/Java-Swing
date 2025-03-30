@@ -1,0 +1,23 @@
+Layered panes are used to manage components that overlap and need controlled stacking in a user interface.
+
+In practical applications, you might use a layered pane when:
+
+Creating Multi-Window Interfaces:
+In applications that simulate a desktop environment (like an MDI – Multiple Document Interface), you can have multiple
+internal frames or panels that overlap, similar to windows on your computer.
+
+Implementing Drag-and-Drop:
+When you need to allow users to drag elements around a container, a layered pane makes it easy to control which
+element appears on top as they are moved.
+
+Building Custom Visual Effects:
+Applications like graphic editors, games, or mapping tools often require elements (such as tool palettes,
+pop-up notifications, or overlays) that need to appear over other components.
+
+Dynamic Content Display:
+You might display temporary information or interactive elements (like tooltips, floating menus, or status indicators)
+that should appear above the main content without disturbing the overall layout.
+
+The aim of using a layered pane is to give you fine control over the "z-order" of components—the order in which they
+are painted on the screen—so that you can dynamically change which elements are visible, provide interactive experiences,
+or create more engaging interfaces.
